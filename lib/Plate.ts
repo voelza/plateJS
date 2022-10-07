@@ -115,26 +115,56 @@ function bind(updateFunction: () => void): any {
 }
 
 export function text(element: Element, text: () => string): void {
-    const update = () => {
-        const result = text();
-        updateForEach(element, el => el.textContent = result);
-    };
-    bind(update);
+    bind(
+        () => {
+            const result = text();
+            updateForEach(element, el => el.textContent = result);
+        }
+    );
 }
 
 export function attr(element: Element | Element[], name: string, value: () => Object | string): void {
-    const update = () => {
-        const val: Object | string = value();
-        let result: string;
-        if (typeof val === 'object') {
-            result = Object.entries(val).map(([key, value]) => `${key}:${value}`).join(";");
-        } else {
-            result = val;
-        }
+    bind(
+        () => {
+            const val: Object | string = value();
+            let result: string;
+            if (typeof val === 'object') {
+                result = Object.entries(val).map(([key, value]) => `${key}:${value}`).join(";");
+            } else {
+                result = val;
+            }
 
-        updateForEach(element, el => getElement(el).setAttribute(name, result));
-    };
-    bind(update);
+            updateForEach(element, el => getElement(el).setAttribute(name, result));
+        }
+    );
+}
+
+export function render(element: Element | Element[], condition: () => boolean): void {
+    const renderReminder = new Map<Element, Text>();
+    updateForEach(element, el => {
+        const text = new Text();
+        el.parentElement?.insertBefore(text, el);
+        renderReminder.set(el, text);
+    });
+    let previousResult: boolean | undefined = undefined;
+    bind(
+        () => {
+            const result = condition();
+            updateForEach(element, el => {
+                if (result === previousResult) {
+                    return;
+                }
+
+                if (result) {
+                    const text = renderReminder.get(el);
+                    text?.parentElement?.insertBefore(el, text.nextSibling);
+                } else {
+                    el.remove();
+                }
+            });
+            previousResult = result;
+        }
+    );
 }
 
 export function event(element: Element | Element[], event: string, handler: (e: Event) => void): void {
