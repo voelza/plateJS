@@ -1,0 +1,26 @@
+{
+  "name": "plate",
+  "version": "0.1.0",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/plate.umd",
+  "module": "./dist/plate.es",
+  "types": "./dist/Plate.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/plate.es.js",
+      "require": "./dist/plate.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.4",
+    "vite": "^3.1.4",
+    "vite-plugin-dts": "^1.6.5"
+  }
+}
