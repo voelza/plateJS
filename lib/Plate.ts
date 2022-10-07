@@ -139,7 +139,7 @@ export function attr(element: Element | Element[], name: string, value: () => Ob
     );
 }
 
-export function render(element: Element | Element[], condition: () => boolean): void {
+export function renderIf(element: Element | Element[], condition: () => boolean): void {
     const renderReminder = new Map<Element, Text>();
     updateForEach(element, el => {
         const text = new Text();
