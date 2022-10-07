@@ -1,23 +1,12 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import { setupCounter } from './counter'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+import { attr, click, create, text } from "../lib/Plate";
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const dom = create(document.querySelector<HTMLElement>('#app')!);
+text(dom.h1, () => `Hello World!`);
+attr(dom.h1, "style", () => ({ padding: "10px", "background-color": "green", color: "white" }));
+attr(dom.div[0], "style", () => ({ padding: "10px", "background-color": "blue", color: "white" }));
+text(dom.div[0].h3, () => `Object!`);
+click(dom.div[1].helloBtn, (e) => {
+  console.log(e);
+  alert("hi!");
+})
