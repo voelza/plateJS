@@ -114,7 +114,7 @@ function bind(updateFunction: () => void): any {
     statesToObserve = [];
 }
 
-export function text(element: Element, text: () => string): void {
+export function text(element: Element | Element[], text: () => string): void {
     bind(
         () => {
             const result = text();
@@ -140,29 +140,76 @@ export function attr(element: Element | Element[], name: string, value: () => Ob
 }
 
 export function renderIf(element: Element | Element[], condition: () => boolean): void {
-    const renderReminder = new Map<Element, Text>();
+    const positionReminders = new Map<Element, Text>();
     updateForEach(element, el => {
         const text = new Text();
         el.parentElement?.insertBefore(text, el);
-        renderReminder.set(el, text);
+        positionReminders.set(el, text);
     });
     let previousResult: boolean | undefined = undefined;
     bind(
         () => {
             const result = condition();
-            updateForEach(element, el => {
+            try {
                 if (result === previousResult) {
                     return;
                 }
 
-                if (result) {
-                    const text = renderReminder.get(el);
-                    text?.parentElement?.insertBefore(el, text.nextSibling);
-                } else {
-                    el.remove();
+                updateForEach(element, el => {
+                    if (result) {
+                        const text = positionReminders.get(el);
+                        text?.parentElement?.insertBefore(el, text.nextSibling);
+                    } else {
+                        el.remove();
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+            } finally {
+                previousResult = result;
+            }
+        }
+    );
+}
+
+export function forEach<T>(element: Element | Element[], list: () => T[], itemSetup: (itemDOM: PlateDOM, item: T, index: number) => void) {
+    const positionReminders = new Map<Element, Text>();
+    const loopElements = new Map<Element, Element[]>();
+    updateForEach(element, el => {
+        const text = new Text();
+        el.parentElement?.insertBefore(text, el);
+        positionReminders.set(el, text);
+        loopElements.set(el, []);
+        el.remove();
+    });
+    let previousResult: any[] | undefined = undefined;
+    bind(
+        () => {
+            const result = list();
+            try {
+                if (result === previousResult) {
+                    return;
                 }
-            });
-            previousResult = result;
+
+                updateForEach(element, el => {
+                    const loopElement = loopElements.get(el);
+                    for (const element of loopElement!) {
+                        element.remove();
+                    }
+                    const text = positionReminders.get(el);
+                    for (let i = 0; i < result.length; i++) {
+                        const item = result[i];
+                        const cloneEl = el.cloneNode(true) as Element;
+                        text?.parentElement?.insertBefore(cloneEl, text);
+                        loopElement?.push(cloneEl);
+                        requestAnimationFrame(() => itemSetup(create(cloneEl), item, i));
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+            } finally {
+                previousResult = result;
+            }
         }
     );
 }
