@@ -22,7 +22,7 @@ function createDOMAndFillRefs(element: Element, refs: any): any {
 
         for (const name of names) {
             let isArray = dom[name] instanceof Array;
-            if (dom[name]) {
+            if (!isArray && dom[name]) {
                 isArray = true;
                 dom[name] = [dom[name]];
             }
@@ -54,6 +54,15 @@ function createDOMAndFillRefs(element: Element, refs: any): any {
         }
     }
     return dom;
+}
+
+export function state<T>(state: T): [() => T, (newState: T) => void] {
+    return [
+        () => state,
+        (newState: T) => {
+            state = newState;
+        }
+    ];
 }
 
 export function text(element: Element, text: () => string): void {
