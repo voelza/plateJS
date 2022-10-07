@@ -175,6 +175,47 @@ export function click(element: Element | Element[], handler: (e: Event) => void)
     event(element, "click", handler);
 }
 
+export function model<T>(element: Element | Element[], stateGetter: () => T, stateSetter: (newState: T) => void): void {
+    updateForEach(element, el => {
+        event(el, "input", (e) => {
+            const event = e as InputEvent;
+            const target = event.target as HTMLInputElement;
+            const value = target.value;
+            let nextState: any = value;
+            switch (target.type) {
+                case "number":
+                case "range":
+                    nextState = parseFloat(value);
+                case "date":
+                case "datetime-local":
+                    nextState = new Date(value);
+                case "checkbox":
+                case "radio":
+                    nextState = target.checked;
+
+            }
+            //@ts-ignore
+            stateSetter(nextState);
+        });
+    });
+
+    bind(
+        () => {
+            const stateValue = stateGetter();
+            updateForEach(element, el => {
+                const target = el as HTMLInputElement;
+                if (target.type === "checkbox" || target.type === "radio") {
+                    //@ts-ignore
+                    target.checked = stateValue;
+                } else {
+                    //@ts-ignore
+                    target.value = stateValue;
+                }
+            });
+        }
+    );
+}
+
 function getElement(element: any) {
     if (element instanceof Element) {
         return element;

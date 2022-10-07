@@ -1,5 +1,5 @@
 
-import { attr, click, create, render, state, text } from "../lib/Plate";
+import { attr, click, create, model, render, state, text } from "../lib/Plate";
 
 const plateDOM = create(document.querySelector<HTMLElement>('#app')!);
 console.log(plateDOM);
@@ -22,6 +22,12 @@ click(dom.div[1].helloBtn, (e) => {
   alert("das!");
 });
 render(plateDOM.refs.high, () => count() > 10);
+
+const [bla, setBla] = state("Blub Blub");
+text(plateDOM.refs.inputTest.p, () => bla());
+model(plateDOM.refs.inputTest.input, bla, setBla);
+model(plateDOM.refs.inputTest.textarea, bla, setBla);
+
 
 const counter = create(document.getElementById("counter")!);
 text(counter.dom.span, () => `Count is ${count()}`);
