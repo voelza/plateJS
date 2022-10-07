@@ -21,3 +21,8 @@ click(dom.div[1].helloBtn, (e) => {
 const [count, setCount] = state(0);
 text(plateDOM.refs.countDisplay, () => `${count()}`);
 click(plateDOM.refs.counter, () => setCount(count() + 1));
+
+
+const counter = create(document.getElementById("counter")!);
+text(counter.dom.span, () => `Count is ${count()}`);
+click(counter.dom, () => setCount(count() + 1));

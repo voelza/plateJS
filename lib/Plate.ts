@@ -5,7 +5,17 @@ export type PlateDOM = {
 
 export function create(element: Element): PlateDOM {
     const refs = {};
-    const dom = createDOMAndFillRefs(element, refs);
+
+    const childDOM = createDOMAndFillRefs(element, refs);
+    const dom = new Proxy({}, {
+        get(_, prop) {
+            if (prop === "self") {
+                return element;
+            }
+            return childDOM[prop];
+        }
+    })
+
     return { dom, refs };
 }
 
