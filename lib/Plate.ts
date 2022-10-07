@@ -19,7 +19,6 @@ export function create(element: Element): PlateDOM {
     return { dom, refs };
 }
 
-
 function createDOMAndFillRefs(element: Element, refs: any): any {
     const dom: any = {};
     for (let i = 0; i < element.children.length; i++) {
@@ -99,10 +98,10 @@ export function state<T>(startState: T): [() => T, (newState: T) => void] {
     ];
 }
 
-function bind(valueFunction: () => any, updateFunction: () => void): any {
+function bind(updateFunction: () => void): any {
     createObserverMode = true;
 
-    valueFunction();
+    updateFunction();
 
     if (statesToObserve.length > 0) {
         const observer: StateObserver = { update: updateFunction };
@@ -116,20 +115,26 @@ function bind(valueFunction: () => any, updateFunction: () => void): any {
 }
 
 export function text(element: Element, text: () => string): void {
-    const update = () => updateForEach(element, el => el.textContent = text());
-    bind(text, update)
-    update();
+    const update = () => {
+        const result = text();
+        updateForEach(element, el => el.textContent = result);
+    };
+    bind(update);
 }
 
 export function attr(element: Element | Element[], name: string, value: () => Object | string): void {
-    const val: Object | string = value();
-    let result: string;
-    if (typeof val === 'object') {
-        result = Object.entries(val).map(([key, value]) => `${key}:${value}`).join(";");
-    } else {
-        result = val;
-    }
-    updateForEach(element, el => getElement(el).setAttribute(name, result));
+    const update = () => {
+        const val: Object | string = value();
+        let result: string;
+        if (typeof val === 'object') {
+            result = Object.entries(val).map(([key, value]) => `${key}:${value}`).join(";");
+        } else {
+            result = val;
+        }
+
+        updateForEach(element, el => getElement(el).setAttribute(name, result));
+    };
+    bind(update);
 }
 
 export function event(element: Element | Element[], event: string, handler: (e: Event) => void): void {
