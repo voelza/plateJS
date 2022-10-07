@@ -6,7 +6,7 @@ module.exports = defineConfig({
     build: {
         lib: {
             entry: resolve(__dirname, 'lib/Plate.ts'),
-            name: 'PLATE',
+            name: 'PlateJS',
             fileName: (format) => `plate.${format}.js`
         },
         rollupOptions: {
@@ -14,7 +14,7 @@ module.exports = defineConfig({
                 // Provide global variables to use in the UMD build
                 // for externalized deps
                 globals: {
-                    plate: 'PLATE'
+                    plate: 'PlateJS'
                 }
             }
         }
