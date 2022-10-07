@@ -56,17 +56,59 @@ function createDOMAndFillRefs(element: Element, refs: any): any {
     return dom;
 }
 
-export function state<T>(state: T): [() => T, (newState: T) => void] {
+type StateObserver = {
+    update: () => void
+};
+
+type State<T> = {
+    value: T,
+    observers: StateObserver[]
+};
+
+
+let createObserverMode: boolean = false;
+let statesToObserve: State<any>[] = [];
+export function state<T>(startState: T): [() => T, (newState: T) => void] {
+    const state: State<T> = {
+        value: startState,
+        observers: []
+    }
     return [
-        () => state,
+        () => {
+            if (createObserverMode) {
+                statesToObserve.push(state);
+            }
+            return state.value;
+        },
         (newState: T) => {
-            state = newState;
+            state.value = newState;
+            for (const observer of state.observers) {
+                observer.update();
+            }
         }
     ];
 }
 
+function bind(valueFunction: () => any, updateFunction: () => void): any {
+    createObserverMode = true;
+
+    valueFunction();
+
+    if (statesToObserve.length > 0) {
+        const observer: StateObserver = { update: updateFunction };
+        for (const state of statesToObserve) {
+            state.observers.push(observer);
+        }
+    }
+
+    createObserverMode = false;
+    statesToObserve = [];
+}
+
 export function text(element: Element, text: () => string): void {
-    updateForEach(element, el => el.textContent = text());
+    const update = () => updateForEach(element, el => el.textContent = text());
+    bind(text, update)
+    update();
 }
 
 export function attr(element: Element | Element[], name: string, value: () => Object | string): void {
