@@ -122,8 +122,12 @@ export function attr(element: Element | Element[], name: string, value: () => Ob
     updateForEach(element, el => getElement(el).setAttribute(name, result));
 }
 
+export function event(element: Element | Element[], event: string, handler: (e: Event) => void): void {
+    updateForEach(element, el => el.addEventListener(event, handler));
+}
+
 export function click(element: Element | Element[], handler: (e: Event) => void): void {
-    updateForEach(element, el => el.addEventListener("click", handler));
+    event(element, "click", handler);
 }
 
 function getElement(element: any) {
