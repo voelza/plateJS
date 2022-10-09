@@ -248,3 +248,25 @@ In our example the only ref have is the counter button.
 ```javascript
 plateDOM.refs.counter
 ```
+
+The complete `PlateDOM` of our example looks like this
+
+```javascript
+{
+    dom: {
+        section: [
+            {
+                label,
+                button,
+                counter
+            },
+            {
+                span
+            }
+        ]
+    }
+    refs: {
+        counter
+    }
+}
+```
