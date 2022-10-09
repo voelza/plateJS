@@ -172,7 +172,13 @@ export function renderIf(element: Element | Element[], condition: () => boolean)
     );
 }
 
-export function forEach<T>(element: Element | Element[], list: () => T[], itemSetup: (itemDOM: PlateDOM, item: T, index: number) => void) {
+export type ItemSetupState = {
+    element: Element,
+    item: any,
+    index: number
+}
+
+export function forEach<T>(element: Element | Element[], list: () => T[], itemSetup: (itemSetupState: ItemSetupState) => void): void {
     const positionReminders = new Map<Element, Text>();
     const loopElements = new Map<Element, Element[]>();
     updateForEach(element, el => {
@@ -202,7 +208,7 @@ export function forEach<T>(element: Element | Element[], list: () => T[], itemSe
                         const cloneEl = el.cloneNode(true) as Element;
                         text?.parentElement?.insertBefore(cloneEl, text);
                         loopElement?.push(cloneEl);
-                        requestAnimationFrame(() => itemSetup(create(cloneEl), item, i));
+                        requestAnimationFrame(() => itemSetup({ element: cloneEl, item, index: i }));
                     }
                 });
             } catch (e) {
