@@ -5,18 +5,17 @@ export type PlateDOM = {
 
 export function create(element: Element): PlateDOM {
     const refs = {};
+    return {
+        dom: createDOMElement(createDOMAndFillRefs(element, refs), element),
+        refs
+    };
+}
 
-    const childDOM = createDOMAndFillRefs(element, refs);
-    const dom = new Proxy({}, {
-        get(_, prop) {
-            if (prop === "self") {
-                return element;
-            }
-            return childDOM[prop];
-        }
-    })
-
-    return { dom, refs };
+function createDOMElement(childDOM: any, element: Element): any {
+    const dom: any = {};
+    Object.entries(childDOM).forEach(([k, v]) => dom[k] = v);
+    dom.__self = element;
+    return dom;
 }
 
 function createDOMAndFillRefs(element: Element, refs: any): any {
@@ -40,15 +39,7 @@ function createDOMAndFillRefs(element: Element, refs: any): any {
             if (childElement.children.length === 0) {
                 child = childElement;
             } else {
-                const childDOM = createDOMAndFillRefs(childElement, refs);
-                child = new Proxy({}, {
-                    get(_, prop) {
-                        if (prop === "self") {
-                            return childElement;
-                        }
-                        return childDOM[prop];
-                    }
-                });
+                child = createDOMElement(createDOMAndFillRefs(childElement, refs), childElement);
             }
 
             if (isArray) {
@@ -273,7 +264,7 @@ function getElement(element: any) {
     if (element instanceof Element) {
         return element;
     }
-    return element.self;
+    return element.__self;
 }
 
 function updateForEach(element: Element | Element[], consumer: (el: Element) => void) {

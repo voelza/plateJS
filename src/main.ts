@@ -82,9 +82,29 @@ click(counterDOM.refs.counter, () => setCount(count() + 1));
 attr(counterDOM.dom.section[1], "style", () => count() > 10 ? `background-color:red;` : "");
 renderIf(counterDOM.dom.section[1].span, () => count() > 10);
 
-const [fruits] = state(["strawberry", "apple", "banana"]);
 
-const liElement = counterDOM.dom.ul.li;
-forEach(liElement, fruits, ({ element, item, index }) => {
+
+const ul = document.createElement("ul");
+const li = document.createElement("li");
+ul.appendChild(li);
+
+const [fruits, setFruits] = state(["strawberry", "apple", "banana"]);
+forEach(li, fruits, ({ element, item, index }) => {
   element.textContent = `${index + 1}: ${item.toUpperCase()}`;
 });
+
+const addFruitBtn = document.createElement("button");
+addFruitBtn.textContent = "Add Fruit";
+const removeFruitBtn = document.createElement("button");
+removeFruitBtn.textContent = "Remove Fruit";
+
+let grapeCounter = 0;
+click(addFruitBtn, () => setFruits([...fruits(), "grape" + [...Array(++grapeCounter).keys()].map(_ => "s").join("")]));
+click(removeFruitBtn, () => {
+  grapeCounter--;
+  setFruits([...fruits().slice(0, fruits().length - 1)]);
+});
+
+document.body.appendChild(ul);
+document.body.appendChild(addFruitBtn);
+document.body.appendChild(removeFruitBtn);
