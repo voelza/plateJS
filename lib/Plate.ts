@@ -109,9 +109,13 @@ export function computed<T>(computer: () => T): () => T {
 }
 
 function bind(updateFunction: () => void): void {
+    createBinding(updateFunction, updateFunction);
+}
+
+function createBinding(bindingCollectorFunction: () => void, updateFunction: () => void): void {
     createObserverMode = true;
 
-    updateFunction();
+    bindingCollectorFunction();
 
     if (statesToObserve.length > 0) {
         const observer: StateObserver = { update: updateFunction };
@@ -232,6 +236,10 @@ export function forEach<T>(element: Element | Element[], list: () => T[], itemSe
 
 export function watch(watcher: () => void): void {
     bind(watcher);
+}
+
+export function watchDetached(watcher: () => void, ...stateGetter: (() => any)[]): void {
+    createBinding(() => stateGetter.forEach(s => s()), watcher);
 }
 
 export function event(element: Element | Element[], event: string, handler: (e: Event) => void): void {

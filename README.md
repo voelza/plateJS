@@ -134,6 +134,17 @@ watch(() => {
 });
 ```
 
+If you don't actually use the changes you use within your watcher you will have to use the `watchDetached` function. It also takes in a watcher function and additionally one more more state getter functions which will be used to bind this watcher to the given state.
+
+```typescript
+function watchDetached(watcher: () => void, ...stateGetter: (() => any)[]): void
+```
+
+```javascript
+const [count, setCount] = state(0);
+watchDetached(() => {  console.log("Count changed!");}, count);
+```
+
 # Control flow
 
 This library give you two options to add control flow to your DOM elements.
