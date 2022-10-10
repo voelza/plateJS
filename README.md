@@ -38,7 +38,7 @@ const [count, setCount] = state(0);
 
 ## Computed State
 
-Sometimes you will want a state which changes whenever other states change. For that you can use the `computed` function. It takes in a compute function to create the computed change which will be called whenever the dependencies change.
+Sometimes you will want a state which changes whenever other states change. For that you can use the `computed` function. It takes in a compute function to create the computed change which will be called whenever the dependencies change. Beware: Computed states cannot be changed manually and will only be updated automatically. This is why there is no setter for computed values.
 
 ```typescript
 function computed<T>(computer: () => T): () => T
@@ -124,7 +124,7 @@ model(inputElement, text, setText);
 Sometimes you may want to listen to state changes and act on them. To do so you can call the `watch` function. This takes in a watcher function which will be called whenever the used states change.
 
 ```typescript
-
+function watch(watcher: () => void): void
 ```
 
 ```javascript
