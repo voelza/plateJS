@@ -148,7 +148,17 @@ export function attr(element: Element | Element[], name: string, value: () => Ob
                 result = val;
             }
 
-            updateForEach(element, el => getElement(el).setAttribute(name, result));
+
+            if (typeof result === "boolean") {
+                if (Boolean(result)) {
+                    updateForEach(element, el => getElement(el).setAttribute(name, ""));
+                } else {
+                    updateForEach(element, el => getElement(el).removeAttribute(name));
+                }
+
+            } else {
+                updateForEach(element, el => getElement(el).setAttribute(name, result));
+            }
         }
     );
 }
@@ -254,20 +264,27 @@ export function model<T>(element: Element | Element[], stateGetter: () => T, sta
     updateForEach(element, el => {
         event(el, "input", (e) => {
             const event = e as InputEvent;
-            const target = event.target as HTMLInputElement;
-            const value = target.value;
-            let nextState: any = value;
-            switch (target.type) {
-                case "number":
-                case "range":
-                    nextState = parseFloat(value);
-                case "date":
-                case "datetime-local":
-                    nextState = new Date(value);
-                case "checkbox":
-                case "radio":
-                    nextState = target.checked;
 
+            let nextState: any;
+            if (event.target instanceof HTMLInputElement) {
+                const value = event.target.value;
+                nextState = value;
+                switch (event.target.type) {
+                    case "number":
+                    case "range":
+                        nextState = parseFloat(value);
+                        break;
+                    case "date":
+                    case "datetime-local":
+                        nextState = new Date(value);
+                        break;
+                    case "checkbox":
+                    case "radio":
+                        nextState = event.target.checked;
+                        break;
+                }
+            } else if (event.target instanceof HTMLSelectElement) {
+                nextState = event.target.options[event.target.selectedIndex].text;
             }
             //@ts-ignore
             stateSetter(nextState);
@@ -278,13 +295,26 @@ export function model<T>(element: Element | Element[], stateGetter: () => T, sta
         () => {
             const stateValue = stateGetter();
             updateForEach(element, el => {
-                const target = el as HTMLInputElement;
-                if (target.type === "checkbox" || target.type === "radio") {
-                    //@ts-ignore
-                    target.checked = stateValue;
-                } else {
-                    //@ts-ignore
-                    target.value = stateValue;
+                if (el instanceof HTMLInputElement) {
+                    if (el.type === "checkbox" || el.type === "radio") {
+                        //@ts-ignore
+                        el.checked = stateValue;
+                    } else if (el.type === "date" && stateValue instanceof Date) {
+                        el.value = stateValue.toISOString().split('T')[0];
+                    } else {
+                        //@ts-ignore
+                        el.value = stateValue;
+                    }
+                } else if (el instanceof HTMLSelectElement) {
+                    let selectedIndex = 0;
+                    for (let i = 0; i < el.options.length; i++) {
+                        const option = el.options[i];
+                        if (option.text === stateValue) {
+                            selectedIndex = i;
+                            break;
+                        }
+                    }
+                    el.selectedIndex = selectedIndex;
                 }
             });
         }
