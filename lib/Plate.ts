@@ -230,6 +230,10 @@ export function forEach<T>(element: Element | Element[], list: () => T[], itemSe
     );
 }
 
+export function watch(watcher: () => void): void {
+    bind(watcher);
+}
+
 export function event(element: Element | Element[], event: string, handler: (e: Event) => void): void {
     updateForEach(element, el => el.addEventListener(event, handler));
 }

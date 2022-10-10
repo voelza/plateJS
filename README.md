@@ -119,6 +119,21 @@ const inputElement = [...] // get it however you want.
 model(inputElement, text, setText);
 ```
 
+# Listening to State changes
+
+Sometimes you may want to listen to state changes and act on them. To do so you can call the `watch` function. This takes in a watcher function which will be called whenever the used states change.
+
+```typescript
+
+```
+
+```javascript
+const [count, setCount] = state(0);
+watch(() => {
+  console.log(count());
+});
+```
+
 # Control flow
 
 This library give you two options to add control flow to your DOM elements.
