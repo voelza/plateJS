@@ -27,6 +27,12 @@ attr(counterDOM.dom.section[1], "style", () => count() > 10 ? `background-color:
 renderIf(counterDOM.dom.section[1].span, () => count() > 10);
 ```
 
+# How to use
+You can simple use the umd build like this:
+```html
+<script src="https://cdn.jsdelivr.net/gh/voelza/platejs@v0.1.0/dist/plate.umd.js"></script>
+```
+
 # Creating State
 
 To create reactive state you will have to call the `state` function. This will return two functions in an array. The first index will be the getter for your state and the 
