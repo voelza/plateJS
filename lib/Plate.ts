@@ -89,7 +89,26 @@ export function state<T>(startState: T): [() => T, (newState: T) => void] {
     ];
 }
 
-function bind(updateFunction: () => void): any {
+export function computed<T>(computer: () => T): () => T {
+    const state: State<T | undefined> = {
+        value: undefined,
+        observers: []
+    }
+    bind(() => {
+        state.value = computer();
+        for (const observer of state.observers) {
+            observer.update();
+        }
+    });
+    return () => {
+        if (createObserverMode) {
+            statesToObserve.push(state);
+        }
+        return state.value!;
+    };
+}
+
+function bind(updateFunction: () => void): void {
     createObserverMode = true;
 
     updateFunction();

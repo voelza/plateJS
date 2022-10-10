@@ -36,6 +36,19 @@ second index will be the setter to change your state.
 const [count, setCount] = state(0);
 ```
 
+## Computed State
+
+Sometimes you will want a state which changes whenever other states change. For that you can use the `computed` function. It takes in a compute function to create the computed change which will be called whenever the dependencies change.
+
+```typescript
+function computed<T>(computer: () => T): () => T
+```
+
+```javascript
+const [count, setCount] = state(0);
+const counterDoubled = computed(() => count() * 2);
+```
+
 # Binding DOM elements to state
 
 To bind DOM elements to state you will have to use the given linking functions.

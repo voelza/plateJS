@@ -1,5 +1,5 @@
 
-import { attr, click, create, forEach, model, renderIf, state, text } from "../lib/Plate";
+import { attr, click, computed, create, forEach, model, renderIf, state, text } from "../lib/Plate";
 
 const plateDOM = create(document.querySelector<HTMLElement>('#app')!);
 console.log(plateDOM);
@@ -82,6 +82,8 @@ click(counterDOM.refs.counter, () => setCount(count() + 1));
 attr(counterDOM.dom.section[1], "style", () => count() > 10 ? `background-color:red;` : "");
 renderIf(counterDOM.dom.section[1].span, () => count() > 10);
 
+const counterDoubled = computed(() => count() * 2);
+text(counterDOM.dom.section[0].span, () => `${counterDoubled()}`);
 
 
 const ul = document.createElement("ul");
