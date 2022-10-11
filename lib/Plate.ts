@@ -193,15 +193,23 @@ export type ItemSetupState = {
     index: number
 }
 
+type Loop = {
+    marker: Text,
+    template: Element,
+    elements: Element[]
+}
+
 export function forEach<T>(element: Element | Element[], list: () => T[], itemSetup: (itemSetupState: ItemSetupState) => void): void {
-    const positionReminders = new Map<Element, Text>();
-    const elLoopElements = new Map<Element, Element[]>();
+    const loops: Loop[] = [];
     updateForEach(element, el => {
         const text = new Text();
         el.before(text);
-        positionReminders.set(el, text);
-        elLoopElements.set(el, []);
         el.remove();
+        loops.push({
+            marker: text,
+            template: el.cloneNode(true) as Element,
+            elements: []
+        });
     });
     let previousResult: any[] | undefined = undefined;
     bind(
@@ -212,22 +220,19 @@ export function forEach<T>(element: Element | Element[], list: () => T[], itemSe
                     return;
                 }
 
-                updateForEach(element, el => {
-                    const loopElements = elLoopElements.get(el)!;
-                    while (loopElements.length > 0) {
-                        loopElements.pop()?.remove();
+                for (const loop of loops) {
+                    while (loop.elements.length > 0) {
+                        loop.elements.pop()?.remove();
                     }
 
-                    const text = positionReminders.get(el);
                     for (let i = 0; i < result.length; i++) {
                         const item = result[i];
-                        const cloneEl = el.cloneNode(true) as Element;
-                        console.log(cloneEl);
-                        text!.before(cloneEl);
-                        loopElements?.push(cloneEl);
+                        const cloneEl = loop.template.cloneNode(true) as Element;
+                        loop.marker.before(cloneEl);
+                        loop.elements.push(cloneEl);
                         requestAnimationFrame(() => itemSetup({ element: cloneEl, item, index: i }));
                     }
-                });
+                }
             } catch (e) {
                 console.error(e);
             } finally {

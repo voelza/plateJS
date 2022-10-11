@@ -1,0 +1,42 @@
+<style>
+    * {
+        font-size: inherit;
+    }
+
+    input {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    select {
+        float: left;
+        margin: 0 1em 1em 0;
+        width: 14em;
+    }
+
+    .buttons {
+        clear: both;
+    }
+
+    button+button {
+        margin-left: 5px;
+    }
+</style>
+
+<div id="app">
+    <div><input ref="prefix" placeholder="Filter prefix"></div>
+
+    <select size="5" ref="selected">
+        <option ref="names"></option>
+    </select>
+
+    <label>Name: <input ref="first"></label>
+    <label>Surname: <input ref="last"></label>
+
+    <div class="buttons">
+        <button ref="create">Create</button>
+        <button ref="update">Update</button>
+        <button ref="del">Delete</button>
+    </div>
+</div>
+<script type="module" src="index.ts"></script>
