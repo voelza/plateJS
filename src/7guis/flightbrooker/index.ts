@@ -1,8 +1,9 @@
-import { attr, click, computed, create, forEach, model, state, text } from "../../../lib/Plate";
+import { attr, click, computed, create, model, state, text } from "../../../lib/Plate";
 
 const refs = create(document.getElementById("app")!).refs;
 
 const [type, setType] = state("one-way flight");
+console.log(type);
 model(refs.type, type, setType);
 
 const [date, setDate] = state(new Date());

@@ -117,3 +117,22 @@ click(removeFruitBtn, () => {
 document.body.appendChild(ul);
 document.body.appendChild(addFruitBtn);
 document.body.appendChild(removeFruitBtn);
+
+
+
+
+const boolTest = create(document.getElementById("boolTest")!).refs;
+
+const [boolA, setBoolA] = state(true);
+const [boolB, setBoolB] = state(true);
+
+click(boolTest.toggleA, () => setBoolA(!boolA()));
+click(boolTest.toggleB, () => setBoolB(!boolB()));
+text(boolTest.toggleA, () => `Toggle A (${boolA()})`);
+text(boolTest.toggleB, () => `Toggle B (${boolB()})`);
+
+text(boolTest.aAndB, () => `a && b = ${boolA() && boolB()}`);
+text(boolTest.aOrB, () => `a || b = ${boolA() || boolB()}`);
+text(boolTest.notAAndB, () => `!a && b  = ${!boolA() && boolB()}`);
+text(boolTest.aAndNotB, () => `a && !b = ${boolA() && !boolB()}`);
+text(boolTest.notAAndNotB, () => `!a && !b = ${!boolA() && !boolB()}`);

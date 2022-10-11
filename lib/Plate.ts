@@ -56,35 +56,40 @@ function createDOMAndFillRefs(element: Element, refs: any): any {
     return dom;
 }
 
-type StateObserver = {
+export type StateObserver = {
     update: () => void
 };
 
-type State<T> = {
+export type State<T> = {
     value: T,
-    observers: StateObserver[]
+    observers: Set<StateObserver>
 };
 
 
-let createObserverMode: boolean = false;
-let statesToObserve: State<any>[] = [];
+let currentObserver: StateObserver | undefined;
+function createGetter<T>(state: State<T | undefined>): () => T {
+    //@ts-ignore
+    return (self: boolean | undefined = undefined) => {
+        if (self) {
+            return state;
+        }
+        if (currentObserver) {
+            state.observers.add(currentObserver);
+        }
+        return state.value!;
+    }
+}
+
 export function state<T>(startState: T): [() => T, (newState: T) => void] {
     const state: State<T> = {
         value: startState,
-        observers: []
+        observers: new Set<StateObserver>()
     }
     return [
-        () => {
-            if (createObserverMode) {
-                statesToObserve.push(state);
-            }
-            return state.value;
-        },
+        createGetter(state),
         (newState: T) => {
             state.value = newState;
-            for (const observer of state.observers) {
-                observer.update();
-            }
+            state.observers.forEach(observer => observer.update());
         }
     ];
 }
@@ -92,7 +97,7 @@ export function state<T>(startState: T): [() => T, (newState: T) => void] {
 export function computed<T>(computer: () => T): () => T {
     const state: State<T | undefined> = {
         value: undefined,
-        observers: []
+        observers: new Set<StateObserver>()
     }
     bind(() => {
         state.value = computer();
@@ -100,41 +105,27 @@ export function computed<T>(computer: () => T): () => T {
             observer.update();
         }
     });
-    return () => {
-        if (createObserverMode) {
-            statesToObserve.push(state);
-        }
-        return state.value!;
+    return createGetter(state);
+}
+
+function bind(updateFunction: () => void): StateObserver {
+    const observer: StateObserver = {
+        update:
+            () => {
+                currentObserver = observer;
+                updateFunction();
+                currentObserver = undefined;
+            }
     };
-}
-
-function bind(updateFunction: () => void): void {
-    createBinding(updateFunction, updateFunction);
-}
-
-function createBinding(bindingCollectorFunction: () => void, updateFunction: () => void): void {
-    createObserverMode = true;
-
-    bindingCollectorFunction();
-
-    if (statesToObserve.length > 0) {
-        const observer: StateObserver = { update: updateFunction };
-        for (const state of statesToObserve) {
-            state.observers.push(observer);
-        }
-    }
-
-    createObserverMode = false;
-    statesToObserve = [];
+    observer.update();
+    return observer;
 }
 
 export function text(element: Element | Element[], text: () => string): void {
-    bind(
-        () => {
-            const result = text();
-            updateForEach(element, el => el.textContent = result);
-        }
-    );
+    bind(() => {
+        const result = text();
+        updateForEach(element, el => el.textContent = result);
+    });
 }
 
 export function attr(element: Element | Element[], name: string, value: () => Object | string): void {
@@ -249,7 +240,12 @@ export function watch(watcher: () => void): void {
 }
 
 export function watchDetached(watcher: () => void, ...stateGetter: (() => any)[]): void {
-    createBinding(() => stateGetter.forEach(s => s()), watcher);
+    const observer = bind(watcher);
+    for (const getter of stateGetter) {
+        //@ts-ignore
+        const state: State<any> = getter(true);
+        state.observers.add(observer);
+    }
 }
 
 export function event(element: Element | Element[], event: string, handler: (e: Event) => void): void {
@@ -283,6 +279,8 @@ export function model<T>(element: Element | Element[], stateGetter: () => T, sta
                         nextState = event.target.checked;
                         break;
                 }
+            } else if (el instanceof HTMLTextAreaElement) {
+                nextState = el.value;
             } else if (event.target instanceof HTMLSelectElement) {
                 nextState = event.target.options[event.target.selectedIndex].text;
             }
@@ -305,7 +303,11 @@ export function model<T>(element: Element | Element[], stateGetter: () => T, sta
                         //@ts-ignore
                         el.value = stateValue;
                     }
-                } else if (el instanceof HTMLSelectElement) {
+                } else if (el instanceof HTMLTextAreaElement) {
+                    //@ts-ignore
+                    el.value = stateValue;
+                }
+                else if (el instanceof HTMLSelectElement) {
                     let selectedIndex = 0;
                     for (let i = 0; i < el.options.length; i++) {
                         const option = el.options[i];
