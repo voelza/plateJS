@@ -56,11 +56,11 @@ function createDOMAndFillRefs(element: Element, refs: any): any {
     return dom;
 }
 
-export type StateObserver = {
+type StateObserver = {
     update: () => void
 };
 
-export type State<T> = {
+type State<T> = {
     value: T,
     observers: Set<StateObserver>
 };
@@ -158,7 +158,7 @@ export function renderIf(element: Element | Element[], condition: () => boolean)
     const positionReminders = new Map<Element, Text>();
     updateForEach(element, el => {
         const text = new Text();
-        el.parentElement?.insertBefore(text, el);
+        el.before(text);
         positionReminders.set(el, text);
     });
     let previousResult: boolean | undefined = undefined;
@@ -173,7 +173,7 @@ export function renderIf(element: Element | Element[], condition: () => boolean)
                 updateForEach(element, el => {
                     if (result) {
                         const text = positionReminders.get(el);
-                        text?.parentElement?.insertBefore(el, text.nextSibling);
+                        text?.before(el);
                     } else {
                         el.remove();
                     }
@@ -195,12 +195,12 @@ export type ItemSetupState = {
 
 export function forEach<T>(element: Element | Element[], list: () => T[], itemSetup: (itemSetupState: ItemSetupState) => void): void {
     const positionReminders = new Map<Element, Text>();
-    const loopElements = new Map<Element, Element[]>();
+    const elLoopElements = new Map<Element, Element[]>();
     updateForEach(element, el => {
         const text = new Text();
-        el.parentElement?.insertBefore(text, el);
+        el.before(text);
         positionReminders.set(el, text);
-        loopElements.set(el, []);
+        elLoopElements.set(el, []);
         el.remove();
     });
     let previousResult: any[] | undefined = undefined;
@@ -213,16 +213,18 @@ export function forEach<T>(element: Element | Element[], list: () => T[], itemSe
                 }
 
                 updateForEach(element, el => {
-                    const loopElement = loopElements.get(el);
-                    for (const element of loopElement!) {
-                        element.remove();
+                    const loopElements = elLoopElements.get(el)!;
+                    while (loopElements.length > 0) {
+                        loopElements.pop()?.remove();
                     }
+
                     const text = positionReminders.get(el);
                     for (let i = 0; i < result.length; i++) {
                         const item = result[i];
                         const cloneEl = el.cloneNode(true) as Element;
-                        text?.parentElement?.insertBefore(cloneEl, text);
-                        loopElement?.push(cloneEl);
+                        console.log(cloneEl);
+                        text!.before(cloneEl);
+                        loopElements?.push(cloneEl);
                         requestAnimationFrame(() => itemSetup({ element: cloneEl, item, index: i }));
                     }
                 });
