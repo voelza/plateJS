@@ -3,13 +3,6 @@ export declare type PlateDOM = {
     refs: any;
 };
 export declare function create(element: Element): PlateDOM;
-export declare type StateObserver = {
-    update: () => void;
-};
-export declare type State<T> = {
-    value: T;
-    observers: Set<StateObserver>;
-};
 export declare function state<T>(startState: T): [() => T, (newState: T) => void];
 export declare function computed<T>(computer: () => T): () => T;
 export declare function text(element: Element | Element[], text: () => string): void;

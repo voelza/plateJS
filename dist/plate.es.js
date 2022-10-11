@@ -1,30 +1,30 @@
-function w(e) {
+function k(e) {
   const n = {};
   return {
-    dom: m(g(e, n), e),
+    dom: h(g(e, n), e),
     refs: n
   };
 }
-function m(e, n) {
+function h(e, n) {
   const s = {};
-  return Object.entries(e).forEach(([o, t]) => s[o] = t), s.__self = n, s;
+  return Object.entries(e).forEach(([c, t]) => s[c] = t), s.__self = n, s;
 }
 function g(e, n) {
   const s = {};
-  for (let o = 0; o < e.children.length; o++) {
-    const t = e.children[o], c = [t.tagName.toLowerCase()], r = t.getAttribute("ref");
-    r && c.push(r);
-    for (const i of c) {
+  for (let c = 0; c < e.children.length; c++) {
+    const t = e.children[c], o = [t.tagName.toLowerCase()], r = t.getAttribute("ref");
+    r && o.push(r);
+    for (const i of o) {
       let a = s[i] instanceof Array;
       !a && s[i] && (a = !0, s[i] = [s[i]]);
-      let u;
-      t.children.length === 0 ? u = t : u = m(g(t, n), t), a ? s[i].push(u) : s[i] = u, r && (n[r] = s[i]);
+      let l;
+      t.children.length === 0 ? l = t : l = h(g(t, n), t), a ? s[i].push(l) : s[i] = l, r && (n[r] = s[i]);
     }
   }
   return s;
 }
 let v;
-function E(e) {
+function x(e) {
   return (n = void 0) => n ? e : (v && e.observers.add(v), e.value);
 }
 function A(e) {
@@ -33,24 +33,24 @@ function A(e) {
     observers: /* @__PURE__ */ new Set()
   };
   return [
-    E(n),
+    x(n),
     (s) => {
-      n.value = s, n.observers.forEach((o) => o.update());
+      n.value = s, n.observers.forEach((c) => c.update());
     }
   ];
 }
-function M(e) {
+function T(e) {
   const n = {
     value: void 0,
     observers: /* @__PURE__ */ new Set()
   };
-  return l(() => {
+  return u(() => {
     n.value = e();
     for (const s of n.observers)
       s.update();
-  }), E(n);
+  }), x(n);
 }
-function l(e) {
+function u(e) {
   const n = {
     update: () => {
       v = n, e(), v = void 0;
@@ -58,106 +58,113 @@ function l(e) {
   };
   return n.update(), n;
 }
-function T(e, n) {
-  l(() => {
+function w(e, n) {
+  u(() => {
     const s = n();
-    f(e, (o) => o.textContent = s);
+    f(e, (c) => c.textContent = s);
   });
 }
-function k(e, n, s) {
-  l(
+function M(e, n, s) {
+  u(
     () => {
-      const o = s();
+      const c = s();
       let t;
-      typeof o == "object" ? t = Object.entries(o).map(([c, r]) => `${c}:${r}`).join(";") : t = o, typeof t == "boolean" ? Boolean(t) ? f(e, (c) => p(c).setAttribute(n, "")) : f(e, (c) => p(c).removeAttribute(n)) : f(e, (c) => p(c).setAttribute(n, t));
+      typeof c == "object" ? t = Object.entries(c).map(([o, r]) => `${o}:${r}`).join(";") : t = c, typeof t == "boolean" ? Boolean(t) ? f(e, (o) => d(o).setAttribute(n, "")) : f(e, (o) => d(o).removeAttribute(n)) : f(e, (o) => d(o).setAttribute(n, t));
     }
   );
 }
-function L(e, n) {
+function I(e, n) {
   const s = /* @__PURE__ */ new Map();
   f(e, (t) => {
-    var r;
-    const c = new Text();
-    (r = t.parentElement) == null || r.insertBefore(c, t), s.set(t, c);
+    const o = new Text();
+    t.before(o), s.set(t, o);
   });
-  let o;
-  l(
+  let c;
+  u(
     () => {
       const t = n();
       try {
-        if (t === o)
+        if (t === c)
           return;
-        f(e, (c) => {
-          var r;
+        f(e, (o) => {
           if (t) {
-            const i = s.get(c);
-            (r = i == null ? void 0 : i.parentElement) == null || r.insertBefore(c, i.nextSibling);
+            const r = s.get(o);
+            r == null || r.before(o);
           } else
-            c.remove();
+            o.remove();
         });
-      } catch (c) {
-        console.error(c);
+      } catch (o) {
+        console.error(o);
       } finally {
-        o = t;
+        c = t;
       }
     }
   );
 }
-function S(e, n, s) {
-  const o = /* @__PURE__ */ new Map(), t = /* @__PURE__ */ new Map();
-  f(e, (r) => {
-    var a;
-    const i = new Text();
-    (a = r.parentElement) == null || a.insertBefore(i, r), o.set(r, i), t.set(r, []), r.remove();
+function L(e, n, s) {
+  const c = [];
+  f(e, (o) => {
+    const r = new Text();
+    o.before(r), o.remove(), c.push({
+      marker: r,
+      template: o.cloneNode(!0),
+      elements: []
+    });
   });
-  let c;
-  l(
+  let t;
+  u(
     () => {
-      const r = n();
+      const o = n();
       try {
-        if (r === c)
+        if (o === t)
           return;
-        f(e, (i) => {
-          var h;
-          const a = t.get(i);
-          for (const d of a)
-            d.remove();
-          const u = o.get(i);
-          for (let d = 0; d < r.length; d++) {
-            const y = r[d], b = i.cloneNode(!0);
-            (h = u == null ? void 0 : u.parentElement) == null || h.insertBefore(b, u), a == null || a.push(b), requestAnimationFrame(() => s({ element: b, item: y, index: d }));
+        for (const r of c) {
+          let i = o.length;
+          t !== void 0 && t.length > i && (i = t.length);
+          for (let a = 0; a < i; a++) {
+            const l = o[a], b = t ? t[a] : null;
+            if (l == b)
+              continue;
+            const p = r.elements[a];
+            if (l === void 0)
+              p.remove(), r.elements.splice(a, 1);
+            else if (b === void 0 || !p) {
+              const y = o[a], m = r.template.cloneNode(!0);
+              r.marker.before(m), r.elements.push(m), requestAnimationFrame(() => s({ element: m, item: y, index: a }));
+            } else
+              s({ element: p, item: l, index: a });
           }
-        });
-      } catch (i) {
-        console.error(i);
+        }
+      } catch (r) {
+        console.error(r);
       } finally {
-        c = r;
+        t = o.map((r) => r instanceof Object ? structuredClone(r) : r);
       }
     }
   );
 }
-function I(e) {
-  l(e);
+function O(e) {
+  u(e);
 }
 function H(e, ...n) {
-  const s = l(e);
-  for (const o of n)
-    o(!0).observers.add(s);
+  const s = u(e);
+  for (const c of n)
+    c(!0).observers.add(s);
 }
-function x(e, n, s) {
-  f(e, (o) => o.addEventListener(n, s));
+function E(e, n, s) {
+  f(e, (c) => c.addEventListener(n, s));
 }
-function O(e, n) {
-  x(e, "click", n);
+function S(e, n) {
+  E(e, "click", n);
 }
-function B(e, n, s) {
-  f(e, (o) => {
-    x(o, "input", (t) => {
-      const c = t;
+function j(e, n, s) {
+  f(e, (c) => {
+    E(c, "input", (t) => {
+      const o = t;
       let r;
-      if (c.target instanceof HTMLInputElement) {
-        const i = c.target.value;
-        switch (r = i, c.target.type) {
+      if (o.target instanceof HTMLInputElement) {
+        const i = o.target.value;
+        switch (r = i, o.target.type) {
           case "number":
           case "range":
             r = parseFloat(i);
@@ -168,52 +175,52 @@ function B(e, n, s) {
             break;
           case "checkbox":
           case "radio":
-            r = c.target.checked;
+            r = o.target.checked;
             break;
         }
       } else
-        o instanceof HTMLTextAreaElement ? r = o.value : c.target instanceof HTMLSelectElement && (r = c.target.options[c.target.selectedIndex].text);
+        c instanceof HTMLTextAreaElement ? r = c.value : o.target instanceof HTMLSelectElement && (r = o.target.options[o.target.selectedIndex].text);
       s(r);
     });
-  }), l(
+  }), u(
     () => {
-      const o = n();
+      const c = n();
       f(e, (t) => {
         if (t instanceof HTMLInputElement)
-          t.type === "checkbox" || t.type === "radio" ? t.checked = o : t.type === "date" && o instanceof Date ? t.value = o.toISOString().split("T")[0] : t.value = o;
+          t.type === "checkbox" || t.type === "radio" ? t.checked = c : t.type === "date" && c instanceof Date ? t.value = c.toISOString().split("T")[0] : t.value = c;
         else if (t instanceof HTMLTextAreaElement)
-          t.value = o;
+          t.value = c;
         else if (t instanceof HTMLSelectElement) {
-          let c = 0;
+          let o = 0;
           for (let r = 0; r < t.options.length; r++)
-            if (t.options[r].text === o) {
-              c = r;
+            if (t.options[r].text === c) {
+              o = r;
               break;
             }
-          t.selectedIndex = c;
+          t.selectedIndex = o;
         }
       });
     }
   );
 }
-function p(e) {
+function d(e) {
   return e instanceof Element ? e : e.__self;
 }
 function f(e, n) {
   let s;
-  e instanceof Array ? s = [...e] : s = [e], s.forEach((o) => n(p(o)));
+  e instanceof Array ? s = [...e] : s = [e], s.forEach((c) => n(d(c)));
 }
 export {
-  k as attr,
-  O as click,
-  M as computed,
-  w as create,
-  x as event,
-  S as forEach,
-  B as model,
-  L as renderIf,
+  M as attr,
+  S as click,
+  T as computed,
+  k as create,
+  E as event,
+  L as forEach,
+  j as model,
+  I as renderIf,
   A as state,
-  T as text,
-  I as watch,
+  w as text,
+  O as watch,
   H as watchDetached
 };

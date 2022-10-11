@@ -114,11 +114,19 @@ click(removeFruitBtn, () => {
   setFruits([...fruits().slice(0, fruits().length - 1)]);
 });
 
+const randomFruitOrder = document.createElement("button");
+randomFruitOrder.textContent = "Randomize Fruits";
+click(randomFruitOrder, () => {
+  setFruits(fruits()
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value))
+});
+
 document.body.appendChild(ul);
 document.body.appendChild(addFruitBtn);
 document.body.appendChild(removeFruitBtn);
-
-
+document.body.appendChild(randomFruitOrder);
 
 
 const boolTest = create(document.getElementById("boolTest")!).refs;

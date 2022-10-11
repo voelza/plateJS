@@ -220,23 +220,45 @@ export function forEach<T>(element: Element | Element[], list: () => T[], itemSe
                     return;
                 }
 
-                for (const loop of loops) {
-                    while (loop.elements.length > 0) {
-                        loop.elements.pop()?.remove();
-                    }
 
-                    for (let i = 0; i < result.length; i++) {
+                for (const loop of loops) {
+                    let length = result.length;
+                    if (previousResult !== undefined && previousResult.length > length) {
+                        length = previousResult.length;
+                    }
+                    for (let i = 0; i < length; i++) {
                         const item = result[i];
-                        const cloneEl = loop.template.cloneNode(true) as Element;
-                        loop.marker.before(cloneEl);
-                        loop.elements.push(cloneEl);
-                        requestAnimationFrame(() => itemSetup({ element: cloneEl, item, index: i }));
+                        const prevItem = previousResult ? previousResult[i] : null;
+                        if (item == prevItem) {
+                            continue;
+                        }
+
+                        const loopElement = loop.elements[i];
+                        if (item === undefined) {
+                            // index out of bound in current... remove old items
+                            loopElement.remove();
+                            loop.elements.splice(i, 1);
+                        } else if (prevItem === undefined || !loopElement) {
+                            // index out of bound in prev... add new item
+                            const item = result[i];
+                            const cloneEl = loop.template.cloneNode(true) as Element;
+                            loop.marker.before(cloneEl);
+                            loop.elements.push(cloneEl);
+                            requestAnimationFrame(() => itemSetup({ element: cloneEl, item, index: i }));
+                        } else {
+                            itemSetup({ element: loopElement, item, index: i });
+                        }
                     }
                 }
             } catch (e) {
                 console.error(e);
             } finally {
-                previousResult = result;
+                previousResult = result.map(o => {
+                    if (o instanceof Object) {
+                        return structuredClone(o);
+                    }
+                    return o;
+                });
             }
         }
     );
