@@ -1,30 +1,30 @@
 function k(e) {
   const n = {};
   return {
-    dom: h(g(e, n), e),
+    dom: m(g(e, n), e),
     refs: n
   };
 }
-function h(e, n) {
-  const s = {};
-  return Object.entries(e).forEach(([c, t]) => s[c] = t), s.__self = n, s;
+function m(e, n) {
+  const r = {};
+  return Object.entries(e).forEach(([c, t]) => r[c] = t), r.__self = n, r;
 }
 function g(e, n) {
-  const s = {};
+  const r = {};
   for (let c = 0; c < e.children.length; c++) {
-    const t = e.children[c], o = [t.tagName.toLowerCase()], r = t.getAttribute("ref");
-    r && o.push(r);
+    const t = e.children[c], o = [t.tagName.toLowerCase()], s = t.getAttribute("ref");
+    s && o.push(s);
     for (const i of o) {
-      let a = s[i] instanceof Array;
-      !a && s[i] && (a = !0, s[i] = [s[i]]);
+      let a = r[i] instanceof Array;
+      !a && r[i] && (a = !0, r[i] = [r[i]]);
       let l;
-      t.children.length === 0 ? l = t : l = h(g(t, n), t), a ? s[i].push(l) : s[i] = l, r && (n[r] = s[i]);
+      t.children.length === 0 ? l = t : l = m(g(t, n), t), a ? r[i].push(l) : r[i] = l, s && (n[s] = r[i]);
     }
   }
-  return s;
+  return r;
 }
 let v;
-function x(e) {
+function E(e) {
   return (n = void 0) => n ? e : (v && e.observers.add(v), e.value);
 }
 function A(e) {
@@ -33,9 +33,9 @@ function A(e) {
     observers: /* @__PURE__ */ new Set()
   };
   return [
-    x(n),
-    (s) => {
-      n.value = s, n.observers.forEach((c) => c.update());
+    E(n),
+    (r) => {
+      n.value = r, n.observers.forEach((c) => c.update());
     }
   ];
 }
@@ -46,9 +46,12 @@ function T(e) {
   };
   return u(() => {
     n.value = e();
-    for (const s of n.observers)
-      s.update();
-  }), x(n);
+    for (const r of n.observers)
+      r.update();
+  }), E(n);
+}
+function w(e) {
+  e(!0).observers.forEach((r) => r.update());
 }
 function u(e) {
   const n = {
@@ -58,26 +61,26 @@ function u(e) {
   };
   return n.update(), n;
 }
-function w(e, n) {
+function M(e, n) {
   u(() => {
-    const s = n();
-    f(e, (c) => c.textContent = s);
+    const r = n();
+    f(e, (c) => c.textContent = r);
   });
 }
-function M(e, n, s) {
+function I(e, n, r) {
   u(
     () => {
-      const c = s();
+      const c = r();
       let t;
-      typeof c == "object" ? t = Object.entries(c).map(([o, r]) => `${o}:${r}`).join(";") : t = c, typeof t == "boolean" ? Boolean(t) ? f(e, (o) => d(o).setAttribute(n, "")) : f(e, (o) => d(o).removeAttribute(n)) : f(e, (o) => d(o).setAttribute(n, t));
+      typeof c == "object" ? t = Object.entries(c).map(([o, s]) => `${o}:${s}`).join(";") : t = c, typeof t == "boolean" ? Boolean(t) ? f(e, (o) => d(o).setAttribute(n, "")) : f(e, (o) => d(o).removeAttribute(n)) : f(e, (o) => d(o).setAttribute(n, t));
     }
   );
 }
-function I(e, n) {
-  const s = /* @__PURE__ */ new Map();
+function L(e, n) {
+  const r = /* @__PURE__ */ new Map();
   f(e, (t) => {
     const o = new Text();
-    t.before(o), s.set(t, o);
+    t.before(o), r.set(t, o);
   });
   let c;
   u(
@@ -88,8 +91,8 @@ function I(e, n) {
           return;
         f(e, (o) => {
           if (t) {
-            const r = s.get(o);
-            r == null || r.before(o);
+            const s = r.get(o);
+            s == null || s.before(o);
           } else
             o.remove();
         });
@@ -101,12 +104,12 @@ function I(e, n) {
     }
   );
 }
-function L(e, n, s) {
+function O(e, n, r) {
   const c = [];
   f(e, (o) => {
-    const r = new Text();
-    o.before(r), o.remove(), c.push({
-      marker: r,
+    const s = new Text();
+    o.before(s), o.remove(), c.push({
+      marker: s,
       template: o.cloneNode(!0),
       elements: []
     });
@@ -118,69 +121,69 @@ function L(e, n, s) {
       try {
         if (o === t)
           return;
-        for (const r of c) {
+        for (const s of c) {
           let i = o.length;
           t !== void 0 && t.length > i && (i = t.length);
           for (let a = 0; a < i; a++) {
-            const l = o[a], b = t ? t[a] : null;
-            if (l == b)
+            const l = o[a], h = t ? t[a] : null;
+            if (l == h)
               continue;
-            const p = r.elements[a];
+            const p = s.elements[a];
             if (l === void 0)
-              p.remove(), r.elements.splice(a, 1);
-            else if (b === void 0 || !p) {
-              const y = o[a], m = r.template.cloneNode(!0);
-              r.marker.before(m), r.elements.push(m), requestAnimationFrame(() => s({ element: m, item: y, index: a }));
+              p.remove(), s.elements.splice(a, 1);
+            else if (h === void 0 || !p) {
+              const y = o[a], b = s.template.cloneNode(!0);
+              s.marker.before(b), s.elements.push(b), requestAnimationFrame(() => r({ element: b, item: y, index: a }));
             } else
-              s({ element: p, item: l, index: a });
+              r({ element: p, item: l, index: a });
           }
         }
-      } catch (r) {
-        console.error(r);
+      } catch (s) {
+        console.error(s);
       } finally {
-        t = o.map((r) => r instanceof Object ? structuredClone(r) : r);
+        t = o.map((s) => s instanceof Object ? structuredClone(s) : s);
       }
     }
   );
 }
-function O(e) {
+function H(e) {
   u(e);
 }
-function H(e, ...n) {
-  const s = u(e);
+function S(e, ...n) {
+  const r = u(e);
   for (const c of n)
-    c(!0).observers.add(s);
+    c(!0).observers.add(r);
 }
-function E(e, n, s) {
-  f(e, (c) => c.addEventListener(n, s));
+function x(e, n, r) {
+  f(e, (c) => c.addEventListener(n, r));
 }
-function S(e, n) {
-  E(e, "click", n);
+function j(e, n) {
+  x(e, "click", n);
 }
-function j(e, n, s) {
+function D(e, n, r) {
   f(e, (c) => {
-    E(c, "input", (t) => {
+    x(c, "input", (t) => {
       const o = t;
-      let r;
+      let s;
       if (o.target instanceof HTMLInputElement) {
         const i = o.target.value;
-        switch (r = i, o.target.type) {
+        switch (s = i, o.target.type) {
           case "number":
           case "range":
-            r = parseFloat(i);
+            s = parseFloat(i);
             break;
           case "date":
           case "datetime-local":
-            r = new Date(i);
+            s = new Date(i);
             break;
           case "checkbox":
           case "radio":
-            r = o.target.checked;
+            s = o.target.checked;
             break;
         }
       } else
-        c instanceof HTMLTextAreaElement ? r = c.value : o.target instanceof HTMLSelectElement && (r = o.target.options[o.target.selectedIndex].text);
-      s(r);
+        c instanceof HTMLTextAreaElement ? s = c.value : o.target instanceof HTMLSelectElement && (s = o.target.options[o.target.selectedIndex].text);
+      r(s);
     });
   }), u(
     () => {
@@ -192,9 +195,9 @@ function j(e, n, s) {
           t.value = c;
         else if (t instanceof HTMLSelectElement) {
           let o = 0;
-          for (let r = 0; r < t.options.length; r++)
-            if (t.options[r].text === c) {
-              o = r;
+          for (let s = 0; s < t.options.length; s++)
+            if (t.options[s].text === c) {
+              o = s;
               break;
             }
           t.selectedIndex = o;
@@ -207,20 +210,21 @@ function d(e) {
   return e instanceof Element ? e : e.__self;
 }
 function f(e, n) {
-  let s;
-  e instanceof Array ? s = [...e] : s = [e], s.forEach((c) => n(d(c)));
+  let r;
+  e instanceof Array ? r = [...e] : r = [e], r.forEach((c) => n(d(c)));
 }
 export {
-  M as attr,
-  S as click,
+  I as attr,
+  j as click,
   T as computed,
   k as create,
-  E as event,
-  L as forEach,
-  j as model,
-  I as renderIf,
+  x as event,
+  O as forEach,
+  D as model,
+  w as notify,
+  L as renderIf,
   A as state,
-  w as text,
-  O as watch,
-  H as watchDetached
+  M as text,
+  H as watch,
+  S as watchDetached
 };

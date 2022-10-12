@@ -5,6 +5,7 @@ export declare type PlateDOM = {
 export declare function create(element: Element): PlateDOM;
 export declare function state<T>(startState: T): [() => T, (newState: T) => void];
 export declare function computed<T>(computer: () => T): () => T;
+export declare function notify(getter: () => any): void;
 export declare function text(element: Element | Element[], text: () => string): void;
 export declare function attr(element: Element | Element[], name: string, value: () => Object | string): void;
 export declare function renderIf(element: Element | Element[], condition: () => boolean): void;

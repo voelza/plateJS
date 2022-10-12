@@ -108,6 +108,12 @@ export function computed<T>(computer: () => T): () => T {
     return createGetter(state);
 }
 
+export function notify(getter: () => any): void {
+    //@ts-ignore
+    const state: State<any> = getter(true);
+    state.observers.forEach(observer => observer.update());
+}
+
 function bind(updateFunction: () => void): StateObserver {
     const observer: StateObserver = {
         update:

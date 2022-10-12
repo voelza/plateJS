@@ -208,6 +208,20 @@ forEach(liElement, fruits, ({element, item, index}) => {
 });
 ```
 
+# Manually triggering DOM binding updates
+Sometimes you might want to notify binded DOM elements to update when a states internal data has changed. Normally you would have to use a setter and pass in a new object to trigger the update cycle but you can also use the `notify` function instead. This simply takes in the getter of a state and it will trigger all the bindings update functions.
+
+```typescript
+function notify(getter: () => any): void
+```
+
+Example:
+```javascript
+const [cells, setCells] = state([]);
+notify(cells);
+```
+
+
 # Event helpers
 
 To create DOM events we provided you a little helper to make it shorter and easier. You can use the `event` function and pass one or more elements to it, provide the event name you want to bind to and the handler.
